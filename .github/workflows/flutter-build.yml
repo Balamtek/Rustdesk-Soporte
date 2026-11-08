@@ -699,7 +699,7 @@ jobs:
             echo "list ./libs/portable/Runner.res";
             ls -l ./libs/portable/Runner.res;
           fi
-            - name: Prepare Balamtek package
+      - name: Prepare Balamtek package
         if: env.UPLOAD_ARTIFACT == 'true'
         shell: powershell
         run: |
