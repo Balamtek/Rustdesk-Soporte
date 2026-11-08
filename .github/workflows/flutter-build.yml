@@ -699,7 +699,20 @@ jobs:
             echo "list ./libs/portable/Runner.res";
             ls -l ./libs/portable/Runner.res;
           fi
+            - name: Prepare Balamtek package
+        if: env.UPLOAD_ARTIFACT == 'true'
+        shell: powershell
+        run: |
+          Copy-Item -Recurse -Path Release -Destination Balamtek-pkg
+          Rename-Item -Path Balamtek-pkg\rustdesk.exe -NewName Balamtek.exe
+          Get-ChildItem Balamtek-pkg\*.exe
 
+      - name: Upload Balamtek package
+        if: env.UPLOAD_ARTIFACT == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: balamtek-windows-${{ matrix.job.arch }}
+          path: Balamtek-pkg
       - name: Upload unsigned
         if: env.UPLOAD_ARTIFACT == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
