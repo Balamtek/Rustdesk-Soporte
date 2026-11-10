@@ -29,7 +29,7 @@ native-windows-gui = {version = "1.0", default-features = false, features = ["an
 [package.metadata.winres]
 LegalCopyright = "Copyright © 2026 Purslane Tech Pte. Ltd. Modificaciones © 2026 Balamtek. Basado en RustDesk (AGPL-3.0)."
 ProductName = "Balamtek Soporte"
-OriginalFilename = "rustdesk.exe"
+OriginalFilename = "Balamtek-Soporte.exe"
 FileDescription = "Balamtek Soporte Remote Desktop"
 #ProductVersion = ""
 
