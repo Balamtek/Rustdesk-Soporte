@@ -92,9 +92,9 @@ BEGIN
             VALUE "CompanyName", "Balamtek" "\0" 
             VALUE "FileDescription", "Balamtek Soporte Remote Desktop" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "rustdesk" "\0"
+            VALUE "InternalName", "Balamtek" "\0"
             VALUE "LegalCopyright", "Copyright © 2026 Purslane Tech Pte. Ltd. Modificaciones © 2026 Balamtek. Basado en RustDesk (AGPL-3.0)." "\0"
-            VALUE "OriginalFilename", "rustdesk.exe" "\0"
+            VALUE "OriginalFilename", "Balamtek.exe" "\0"
             VALUE "ProductName", "Balamtek Soporte" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
