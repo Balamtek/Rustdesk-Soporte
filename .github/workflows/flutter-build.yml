@@ -395,6 +395,12 @@ jobs:
           name: ${{ matrix.job.arch == 'aarch64' && 'topmostwindow-artifacts-ARM64' || 'topmostwindow-artifacts-x64' }}
           path: "./rustdesk"
 
+      - name: Rename exe to Balamtek.exe
+        shell: bash
+        run: |
+          mv ./rustdesk/rustdesk.exe ./rustdesk/Balamtek.exe
+          ls -l ./rustdesk/*.exe
+
       - name: Upload unsigned
         if: env.UPLOAD_ARTIFACT == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -459,7 +465,6 @@ jobs:
           sed -i '/dpiAware/d' res/manifest.xml
           pushd ./libs/portable
           pip3 install -r requirements.txt
-          cp ../../rustdesk/rustdesk.exe ../../rustdesk/Balamtek.exe
           python3 ./generate.py -f ../../rustdesk/ -o . -e ../../rustdesk/Balamtek.exe
           popd
           mkdir -p ./SignOutput
