@@ -591,8 +591,20 @@ class _CmHeaderState extends State<_CmHeader>
         ) ??
         _buildInitialAvatar();
   }
-
-  Widget _buildInitialAvatar() {
+Widget _buildInitialAvatar() {
+    // IDs de los técnicos de Balamtek que muestran su imagen
+    const tecnicos = ['1018609046'];
+    if (tecnicos.contains(client.peerId)) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(15.0),
+        child: Image.asset(
+          'assets/tecnico.jpg',
+          width: 70,
+          height: 70,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
     return Container(
       width: 70,
       height: 70,
