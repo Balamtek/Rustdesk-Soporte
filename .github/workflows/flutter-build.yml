@@ -474,14 +474,14 @@ jobs:
         if: env.UPLOAD_ARTIFACT == 'true'
         shell: bash
         run: |
-          cp ./SignOutput/rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}.exe ./SignOutput/Balamtek-Soporte-${{ env.VERSION }}-${{ matrix.job.arch }}.exe
+          cp ./SignOutput/rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}.exe ./SignOutput/Balamtek-Soporte.exe
 
       - name: Upload Balamtek installer artifact
         if: env.UPLOAD_ARTIFACT == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: Balamtek-Soporte-instalador-windows-${{ matrix.job.arch }}
-          path: ./SignOutput/Balamtek-Soporte-${{ env.VERSION }}-${{ matrix.job.arch }}.exe
+          name: Balamtek-Soporte-Windows
+          path: ./SignOutput/Balamtek-Soporte.exe
           if-no-files-found: error
 
       - name: Add MSBuild to PATH
