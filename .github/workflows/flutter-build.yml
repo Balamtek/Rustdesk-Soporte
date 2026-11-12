@@ -938,7 +938,6 @@ jobs:
 
 
   build-for-macOS:
-    if: ${{ false }}
     name: ${{ matrix.job.target }}
     runs-on: ${{ matrix.job.os }}
     needs: [generate-bridge]
@@ -975,6 +974,44 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: recursive
+
+      - name: Rebrand for Balamtek (macOS)
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import re, pathlib, sys
+
+          def edit(path, pattern, repl, flags=0, expect_min=1):
+              p = pathlib.Path(path)
+              s = p.read_text(encoding="utf-8")
+              new, n = re.subn(pattern, repl, s, flags=flags)
+              if n < expect_min:
+                  sys.exit(f"ERROR: no se encontró el patrón en {path}: {pattern}")
+              p.write_text(new, encoding="utf-8")
+              print(f"OK {path}: {n} cambio(s)")
+
+          # 1) Nombre interno de la aplicación (igual que en Windows)
+          edit("libs/hbb_common/src/config.rs",
+               r'(APP_NAME: RwLock<String> = RwLock::new\()"RustDesk"', r'\1"Balamtek"')
+
+          # 2) Nombre del producto, identificador y copyright de la app de macOS
+          x = "flutter/macos/Runner/Configs/AppInfo.xcconfig"
+          edit(x, r'^PRODUCT_NAME = .*$', 'PRODUCT_NAME = Balamtek', re.M)
+          edit(x, r'^PRODUCT_BUNDLE_IDENTIFIER = .*$', 'PRODUCT_BUNDLE_IDENTIFIER = com.balamtek.soporte', re.M)
+          edit(x, r'^PRODUCT_COPYRIGHT = .*$',
+               'PRODUCT_COPYRIGHT = Copyright © 2026 Purslane Tech Pte. Ltd. Modificaciones © 2026 Balamtek. Basado en RustDesk (AGPL-3.0).', re.M)
+
+          # 3) Proyecto de Xcode: identificador y nombre del .app
+          pb = "flutter/macos/Runner.xcodeproj/project.pbxproj"
+          edit(pb, r'com\.carriez\.rustdesk', 'com.balamtek.soporte')
+          edit(pb, r'RustDesk\.app', 'Balamtek.app')
+
+          # 4) Info.plist: solo el nombre del esquema URL (el esquema rustdesk:// se conserva)
+          edit("flutter/macos/Runner/Info.plist", r'com\.carriez\.rustdesk', 'com.balamtek.soporte')
+
+          # 5) build.py: rutas del .app
+          edit("build.py", r'RustDesk\.app', 'Balamtek.app')
+          PY
 
       - name: Import the codesign cert
         if: env.MACOS_P12_BASE64 != null
@@ -1141,14 +1178,15 @@ jobs:
           CREATE_DMG="$(command -v create-dmg)"
           CREATE_DMG="$(readlink -f "$CREATE_DMG")"
           sed -i -e 's/MAXIMUM_UNMOUNTING_ATTEMPTS=3/MAXIMUM_UNMOUNTING_ATTEMPTS=7/' "$CREATE_DMG"
-          create-dmg --icon "RustDesk.app" 200 190 --hide-extension "RustDesk.app" --window-size 800 400 --app-drop-link 600 185 rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}.dmg ./flutter/build/macos/Build/Products/Release/RustDesk.app
+          create-dmg --volname "Balamtek Soporte" --icon "Balamtek.app" 200 190 --hide-extension "Balamtek.app" --window-size 800 400 --app-drop-link 600 185 Balamtek-Soporte-Mac-${{ matrix.job.arch == 'aarch64' && 'ARM' || 'Intel' }}.dmg ./flutter/build/macos/Build/Products/Release/Balamtek.app
 
       - name: Upload unsigned macOS app
         if: env.UPLOAD_ARTIFACT == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: rustdesk-unsigned-macos-${{ matrix.job.arch }}
-          path: rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}.dmg # can not upload the directory directly or tar.gz, which destroy the link structure, causing the codesign failed
+          name: Balamtek-Soporte-Mac-${{ matrix.job.arch == 'aarch64' && 'ARM' || 'Intel' }}
+          path: Balamtek-Soporte-Mac-${{ matrix.job.arch == 'aarch64' && 'ARM' || 'Intel' }}.dmg
+          if-no-files-found: error
 
       - name: Codesign app and create signed dmg
         if: env.MACOS_P12_BASE64 != null && env.UPLOAD_ARTIFACT == 'true'
@@ -1180,7 +1218,7 @@ jobs:
           rcodesign notary-submit --api-key-path ${{ github.workspace }}/rustdesk.json  --staple rustdesk-${{ env.VERSION }}.dmg
 
       - name: Rename rustdesk
-        if: env.UPLOAD_ARTIFACT == 'true'
+        if: ${{ false }}
         shell: bash
         env:
           VERSION: ${{ env.VERSION }}
@@ -1200,7 +1238,7 @@ jobs:
           if-no-files-found: error
 
       - name: Publish DMG package
-        if: env.UPLOAD_ARTIFACT == 'true' && env.PUBLISH_UPDATE_METADATA != 'true'
+        if: ${{ false }}
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
         with:
           prerelease: true
